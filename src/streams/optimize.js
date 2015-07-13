@@ -28,9 +28,7 @@ module.exports = function () {
       r.progressive();
     }
 
-    if (image.modifiers.quality < 100) {
-      r.quality(image.modifiers.quality);
-    }
+    r.quality(image.modifiers.quality);
 
     r.toBuffer( function (err, buffer) {
       if (err) {

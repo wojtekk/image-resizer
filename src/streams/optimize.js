@@ -26,11 +26,16 @@ module.exports = function () {
 
     if (env.IMAGE_PROGRESSIVE) {
       r.progressive();
+      r.optimiseScans();
     }
 
     if (env.IMAGE_QUALITY < 100) {
       r.quality(env.IMAGE_QUALITY);
     }
+
+    r.overshootDeringing();
+    r.trellisQuantisation();
+    r.compressionLevel(9);
 
     r.toBuffer( function (err, buffer) {
       if (err) {

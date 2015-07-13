@@ -35,7 +35,7 @@ function Image(request){
   this.parseImage(request);
 
   // reject this request if the image format is not correct
-  if (_.indexOf(Image.validFormats, this.format) === -1){
+  if (!_.contains(Image.validFormats, this.format)){
     this.error = new Error(Image.formatErrorText);
   }
 
@@ -78,8 +78,8 @@ Image.prototype.parseImage = function(request){
   // if path contains valid input and output format extensions, remove the output format from path
   if(exts.length > 1) {
     var inputFormat = exts[exts.length - 2].toLowerCase();
-    if (_.indexOf(Image.validFormats, this.format) !== -1 &&
-      _.indexOf(Image.validInputFormats, inputFormat) !== -1){
+    if (_.contains(Image.validFormats, this.format) &&
+      _.contains(Image.validInputFormats, inputFormat)){
       fileStr = exts.slice(0, -1).join('.');
     }
   }
@@ -98,7 +98,7 @@ Image.prototype.parseUrl = function(request){
 
   // if the request is for no modification or metadata then assume the s3path
   // is the entire request path
-  if (_.indexOf(['original', 'json', 'resizeOriginal'], this.modifiers.action) > -1){
+  if (_.contains(['original', 'json', 'resizeOriginal'], this.modifiers.action)){
     if (this.modifiers.external){
       parts.shift();
       this.path = parts.join('/');
@@ -146,7 +146,7 @@ Image.prototype.getFile = function(){
   }
 
   // if this request is for an excluded source create an ErrorStream
-  if (excludes.indexOf(streamType) > -1){
+  if (_.contains(excludes, streamType)){
     this.error = new Error(streamType + ' is an excluded source');
     Stream = ErrorStream;
   }

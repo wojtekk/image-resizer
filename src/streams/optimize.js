@@ -29,9 +29,7 @@ module.exports = function () {
       r.optimiseScans();
     }
 
-    if (image.modifiers.quality < 100) {
-      r.quality(image.modifiers.quality);
-    }
+    r.quality(image.modifiers.quality);
 
     r.overshootDeringing();
     r.trellisQuantisation();

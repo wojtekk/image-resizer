@@ -32,6 +32,9 @@ module.exports = function () {
       r.quality(env.IMAGE_QUALITY);
     }
 
+    if (!image.format) {
+      image.format = 'png';
+    }
     r.toFormat(image.format);
 
     r.toBuffer( function (err, buffer) {

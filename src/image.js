@@ -34,11 +34,6 @@ function Image(request){
   // determine the name and format (mime) of the requested image
   this.parseImage(request);
 
-  // reject this request if the image format is not correct
-  if (!_.contains(Image.validFormats, this.format)){
-    this.error = new Error(Image.formatErrorText);
-  }
-
   // determine the requested modifications
   this.modifiers = modifiers.parse(request.path);
 
@@ -70,17 +65,24 @@ Image.prototype.parseImage = function(request){
   fileStr = fileStr.replace(/.json$/, '');
 
   var exts = fileStr.split('.');
-  this.format = _.last(exts).toLowerCase();
-  if(this.format === 'jpg') {
-    this.format = 'jpeg';
+  var outputFormat = _.last(exts).toLowerCase();
+  if(outputFormat === 'jpg') {
+    outputFormat = 'jpeg';
+  }
+  if(_.contains(Image.validFormats, outputFormat)) {
+    this.format = outputFormat;
   }
 
   // if path contains valid input and output format extensions, remove the output format from path
-  if(exts.length > 1) {
+  if(exts.length > 1 && this.format) {
     var inputFormat = exts[exts.length - 2].toLowerCase();
-    if (_.contains(Image.validFormats, this.format) &&
-      _.contains(Image.validInputFormats, inputFormat)){
+    if(_.contains(Image.validInputFormats, inputFormat)){
       fileStr = exts.slice(0, -1).join('.');
+    }
+    // Allow setting an explicit output format with no input format extension in the path
+    // eg: 'path/to/image..png' resolves to: 'path/to/image', format: 'png')
+    else if(inputFormat === '') {
+      fileStr = exts.slice(0, -2).join('.');
     }
   }
 

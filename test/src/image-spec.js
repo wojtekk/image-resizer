@@ -1,3 +1,4 @@
+/* jshint expr:true */
 'use strict';
 
 var chai = require('chai'),
@@ -75,7 +76,7 @@ describe('Image class', function(){
         img = new Img({path: '/path/to/' + image + '.webp'});
       img.format.should.equal('webp');
       img.image.should.equal(image);
-      img.path.should.equal('/path/to/' + image);
+      img.path.should.equal('path/to/' + image);
     });
 
   });
@@ -107,9 +108,9 @@ describe('Image class', function(){
 
 
   describe('bad formats', function(){
-    it('should set error if the format is not valid', function(){
+    it('should not set output format if the extension is not valid', function(){
       var img = new Img({path: '/path/to/image.tiff'});
-      img.error.message.should.eq(Img.formatErrorText);
+      expect(img.format).to.be.undefined;
     });
   });
 

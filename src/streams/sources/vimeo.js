@@ -14,6 +14,7 @@ function Vimeo(image){
   stream.Readable.call(this, { objectMode : true });
   this.image = image;
   this.ended = false;
+  this.key = 'vimeo';
 
   // set the expiry value to the shorter value
   this.image.expiry = env.IMAGE_EXPIRY_SHORT;
@@ -40,7 +41,7 @@ Vimeo.prototype._read = function(){
     _this.push(null);
   };
 
-  this.image.log.time('vimeo');
+  this.image.log.time(this.key);
   videoId = this.image.image.split('.')[0];
   url = 'http://vimeo.com/api/v2/video/' + videoId + '.json';
 
@@ -55,34 +56,7 @@ Vimeo.prototype._read = function(){
       /* jshint camelcase:false */
       var imageUrl = json[0].thumbnail_large;
       imageUrl = imageUrl.replace('_640.jpg', '');
-
-      var opts = {
-        url: imageUrl,
-        encoding: null
-      };
-
-      request(opts, function (err, response, body) {
-        _this.image.log.timeEnd('vimeo');
-
-        if (err) {
-          _this.image.error = err;
-        }
-        else {
-          if (response.statusCode === 200) {
-            _this.image.contents = body;
-            _this.image.originalContentLength = body.length;
-            _this.ended = true;
-          }
-          else {
-            _this.image.error = new Error('Vimeo image not found');
-            _this.image.error.statusCode = 404;
-          }
-        }
-
-        _this.push(_this.image);
-        _this.push(null);
-      });
-
+      require('./util/fetch')(_this, imageUrl);
     }
   });
 

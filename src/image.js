@@ -34,11 +34,6 @@ function Image(request){
   // determine the name and format (mime) of the requested image
   this.parseImage(request);
 
-  // reject this request if the image format is not correct
-  if (_.indexOf(Image.validFormats, this.format) === -1){
-    this.error = new Error(Image.formatErrorText);
-  }
-
   // determine the requested modifications
   this.modifiers = modifiers.parse(request.path);
 
@@ -58,10 +53,9 @@ function Image(request){
   this.log = new Logger();
 }
 
-
-Image.validFormats = ['jpeg', 'jpg', 'gif', 'png'];
+Image.validInputFormats = ['jpeg', 'jpg', 'gif', 'png', 'webp'];
+Image.validFormats = ['jpeg', 'png', 'webp'];
 Image.formatErrorText = 'not valid image format';
-
 
 // Determine the name and format of the requested image
 Image.prototype.parseImage = function(request){
@@ -70,7 +64,28 @@ Image.prototype.parseImage = function(request){
   // clean out any metadata format
   fileStr = fileStr.replace(/.json$/, '');
 
-  this.format = _.last(fileStr.split('.')).toLowerCase();
+  var exts = fileStr.split('.');
+  var outputFormat = _.last(exts).toLowerCase();
+  if(outputFormat === 'jpg') {
+    outputFormat = 'jpeg';
+  }
+  if(_.contains(Image.validFormats, outputFormat)) {
+    this.format = outputFormat;
+  }
+
+  // if path contains valid input and output format extensions, remove the output format from path
+  if(exts.length > 1 && this.format) {
+    var inputFormat = exts[exts.length - 2].toLowerCase();
+    if(_.contains(Image.validInputFormats, inputFormat)){
+      fileStr = exts.slice(0, -1).join('.');
+    }
+    // Allow setting an explicit output format with no input format extension in the path
+    // eg: 'path/to/image..png' resolves to: 'path/to/image', format: 'png')
+    else if(inputFormat === '') {
+      fileStr = exts.slice(0, -2).join('.');
+    }
+  }
+
   this.image  = fileStr;
 };
 
@@ -85,7 +100,7 @@ Image.prototype.parseUrl = function(request){
 
   // if the request is for no modification or metadata then assume the s3path
   // is the entire request path
-  if (_.indexOf(['original', 'json', 'resizeOriginal'], this.modifiers.action) > -1){
+  if (_.contains(['original', 'json', 'resizeOriginal'], this.modifiers.action)){
     if (this.modifiers.external){
       parts.shift();
       this.path = parts.join('/');
@@ -133,7 +148,7 @@ Image.prototype.getFile = function(){
   }
 
   // if this request is for an excluded source create an ErrorStream
-  if (excludes.indexOf(streamType) > -1){
+  if (_.contains(excludes, streamType)){
     this.error = new Error(streamType + ' is an excluded source');
     Stream = ErrorStream;
   }

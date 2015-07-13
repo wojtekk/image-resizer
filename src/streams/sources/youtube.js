@@ -1,12 +1,10 @@
 'use strict';
 
-var stream, util, request, env;
+var stream, util, env;
 
 stream  = require('stream');
 util    = require('util');
-request = require('request');
 env     = require('../../config/environment_vars');
-
 
 function Youtube(image){
   /* jshint validthis:true */
@@ -16,6 +14,7 @@ function Youtube(image){
   stream.Readable.call(this, { objectMode : true });
   this.image = image;
   this.ended = false;
+  this.key = 'youtube';
 
   // set the expiry value to the shorter value
   this.image.expiry = env.IMAGE_EXPIRY_SHORT;
@@ -38,36 +37,8 @@ Youtube.prototype._read = function(){
 
   videoId = this.image.image.split('.')[0];
   url = 'http://img.youtube.com/vi/' + videoId + '/hqdefault.jpg';
-
-  this.image.log.time('youtube');
-
-  var opts = {
-    url: url,
-    encoding: null
-  };
-
-  request(opts, function (err, response, body) {
-    _this.image.log.timeEnd('youtube');
-
-    if (err) {
-      _this.image.error = err;
-    }
-    else {
-      if (response.statusCode === 200) {
-        _this.image.contents = body;
-        _this.image.originalContentLength = body.length;
-        _this.ended = true;
-      }
-      else {
-        _this.image.error = new Error('Youtube image not found');
-        _this.image.error.statusCode = 404;
-      }
-    }
-
-    _this.push(_this.image);
-    _this.push(null);
-  });
-
+  this.image.log.time(this.key);
+  require('./util/fetch')(_this, url);
 };
 
 

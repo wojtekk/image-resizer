@@ -1,12 +1,11 @@
 'use strict';
 
-var stream, util, env, Twit, t, request, _;
+var stream, util, env, Twit, t, _;
 
 stream  = require('stream');
 util    = require('util');
 env     = require('../../config/environment_vars');
 Twit    = require('twit');
-request = require('request');
 _       = require('lodash');
 
 /* jshint camelcase:false */
@@ -30,6 +29,7 @@ function Twitter(image){
   stream.Readable.call(this, { objectMode : true });
   this.image = image;
   this.ended = false;
+  this.key = 'twitter';
 
   // set the expiry value to the shorter value
   this.image.expiry = env.IMAGE_EXPIRY_SHORT;
@@ -63,7 +63,7 @@ Twitter.prototype._read = function(){
     _this.push(null);
   };
 
-  this.image.log.time('twitter');
+  this.image.log.time(this.key);
 
   profileId = this.image.image.split('.')[0];
 
@@ -84,34 +84,7 @@ Twitter.prototype._read = function(){
         .replace('_normal', '')
         .replace('_bigger', '')
         .replace('_mini', '');
-
-      var opts = {
-        url: imageUrl,
-        encoding: null
-      };
-
-      request(opts, function (err, response, body) {
-        _this.image.log.timeEnd('twitter');
-
-        if (err) {
-          _this.image.error = err;
-        }
-        else {
-          if (response.statusCode === 200) {
-            _this.image.contents = body;
-            _this.image.originalContentLength = body.length;
-            _this.ended = true;
-          }
-          else {
-            _this.image.error = new Error('Twitter user image not found');
-            _this.image.error.statusCode = 404;
-          }
-        }
-
-        _this.push(_this.image);
-        _this.push(null);
-      });
-
+      require('./util/fetch')(_this, imageUrl);
     }
   });
 

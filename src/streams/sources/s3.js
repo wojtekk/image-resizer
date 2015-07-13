@@ -52,7 +52,8 @@ s3Stream.prototype._read = function(){
 
   this.image.log.time('s3');
 
-  client.getObject(awsOptions, function(err, data){
+  var s3Request = client.config.credentials ? client.makeRequest : client.makeUnauthenticatedRequest;
+  s3Request.call(client, 'getObject', awsOptions, function(err, data){
     _this.image.log.timeEnd('s3');
 
     // if there is an error store it on the image object and pass it along

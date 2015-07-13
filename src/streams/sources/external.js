@@ -8,6 +8,8 @@ stream  = require('stream');
 util    = require('util');
 request = require('request');
 
+var _     = require('lodash');
+
 function contentLength(bufs){
   return bufs.reduce(function(sum, buf){
     return sum + buf.length;
@@ -55,6 +57,17 @@ External.prototype._read = function(){
   fbStream.on('response', function(response) {
     if (response.statusCode !== 200) {
       _this.image.error = new Error('Error ' + response.statusCode + ':');
+    } else {
+      var contentType = _.last(response.headers['content-type'].split('/'));
+      var Image = require('../../image');
+      if (!_.contains(Image.validFormats, contentType)) {
+        _this.image.error = new Error('Invalid content type: ' + contentType);
+      } else {
+        // Set output format to input content-type if no explicit format is provided
+        if(!_this.image.format) {
+          _this.image.format = contentType;
+        }
+      }
     }
   });
   fbStream.on('end', function(){

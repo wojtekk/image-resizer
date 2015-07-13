@@ -34,11 +34,6 @@ function Image(request){
   // determine the name and format (mime) of the requested image
   this.parseImage(request);
 
-  // reject this request if the image format is not correct
-  if (_.indexOf(Image.validFormats, this.format) === -1){
-    this.error = new Error(Image.formatErrorText);
-  }
-
   // determine the requested modifications
   this.modifiers = modifiers.parse(request.path);
 
@@ -70,7 +65,13 @@ Image.prototype.parseImage = function(request){
   // clean out any metadata format
   fileStr = fileStr.replace(/.json$/, '');
 
-  this.format = _.last(fileStr.split('.')).toLowerCase();
+  var format = _.last(fileStr.split('.')).toLowerCase();
+
+  // set the output format from the image path extension if it's a valid format
+  if (_.contains(Image.validFormats, this.format)){
+    this.format = format;
+  }
+
   this.image  = fileStr;
 };
 

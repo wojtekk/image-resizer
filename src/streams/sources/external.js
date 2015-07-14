@@ -8,12 +8,6 @@ stream  = require('stream');
 util    = require('util');
 request = require('request');
 
-function contentLength(bufs){
-  return bufs.reduce(function(sum, buf){
-    return sum + buf.length;
-  }, 0);
-}
-
 function External(image, key, prefix){
   /* jshint validthis:true */
   if (!(this instanceof External)){

@@ -1,7 +1,7 @@
 {
-  "name": "image-resizer",
-  "version": "1.1.0",
-  "description": "On-the-fly image resizing and optimization using node and sharp (libvips). Heroku ready!",
+  "name": "image-resizer-wjordan",
+  "version": "0.1.1",
+  "description": "(experimental fork) On-the-fly image resizing and optimization using node and sharp (libvips).",
   "main": "index.js",
   "scripts": {
     "watch": "gulp watch",
@@ -13,20 +13,24 @@
     "node",
     "sharp",
     "libvips",
-    "heroku",
-    "optimization"
+    "optimization",
+    "image-resizer"
   ],
-  "author": "James Nicol <james.andrew.nicol@gmail.com> (https://github.com/jimmynicol)",
+  "author": "Will Jordan <will.jordan@gmail.com> (https://github.com/wjordan)",
+  "contributors": [
+    "James Nicol <james.andrew.nicol@gmail.com> (https://github.com/jimmynicol)"
+  ],
   "license": {
     "type": "MIT",
-    "url": "http://github.com/jimmynicol/image-resizer/raw/master/LICENSE"
+    "url": "http://github.com/wjordan/image-resizer/raw/master/LICENSE"
   },
-  "repository": "git://github.com/jimmynicol/image-resizer",
+  "repository": "git://github.com/wjordan/image-resizer",
   "bin": {
     "image-resizer": "./bin/image_resizer.js"
   },
   "engines": {
-    "node": "0.12.x"
+    "node": "0.12.x",
+    "iojs": "~2"
   },
   "dependencies": {
     "aws-sdk": "~2.0.0-rc9",

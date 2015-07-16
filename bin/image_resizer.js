@@ -56,10 +56,11 @@ function createApplicationAt(dir){
     main: 'index.js',
     description: 'My awesome image resizing service!',
     engines: {
-      'node': pkg.engines.node
+      'node': pkg.engines.node,
+      'iojs': pkg.engines.iojs
     },
     dependencies: {
-      'image-resizer': '~' + pkg.version,
+      'image-resizer-wjordan': '~' + pkg.version,
       'express': pkg.dependencies.express,
       'lodash': pkg.dependencies.lodash,
       'chalk': pkg.dependencies.chalk
@@ -105,7 +106,7 @@ function createApplicationAt(dir){
   console.log('     $ npm install');
   console.log();
   console.log(chalk.green('   then to run the app locally') + ':');
-  console.log('     $ gulp watch');
+  console.log('     $ npm run watch');
   console.log();
 
   exec('vips --version', function (err, stdout, stderr) {

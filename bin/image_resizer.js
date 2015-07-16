@@ -46,7 +46,7 @@ function createApplicationAt(dir){
   // Determine the app name from the directory
   appName = path.basename(path.resolve(dir));
 
-  console.log('\n' + chalk.cyan('Creating new ') + chalk.cyan.bold('image-resizer') + chalk.cyan(' app!'));
+  console.log('\n' + chalk.cyan('Creating new ') + chalk.cyan.bold('image-resizer-wjordan') + chalk.cyan(' app!'));
   console.log();
 
   // create a new package.json

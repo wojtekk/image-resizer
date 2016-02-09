@@ -129,11 +129,8 @@ Image.prototype.getFile = function(){
 
   // look to see if the request has a specified source
   if (_.has(this.modifiers, 'external')){
-    if (_.has(sources, this.modifiers.external)){
+    if (_.has(sources, this.modifiers.external) || _.has(env.externalSources, this.modifiers.external)){
       streamType = this.modifiers.external;
-    } else if (_.has(env.externalSources, this.modifiers.external)) {
-      Stream = sources.external;
-      return new Stream(this, this.modifiers.external, env.externalSources[this.modifiers.external]);
     }
   }
 
@@ -145,8 +142,17 @@ Image.prototype.getFile = function(){
 
   // if all is well find the appropriate stream
   else {
-    this.log.log('new stream created!');
-    Stream = sources[streamType];
+    if (_.has(sources, streamType)){
+      this.log.log('new stream created!');
+      Stream = sources[streamType];
+    } else if (_.has(env.externalSources, streamType)){
+      this.log.log('new external stream created!');
+      Stream = sources.external;
+      return new Stream(this, streamType, env.externalSources[streamType]);
+    } else {
+      this.error = new Error(streamType + ' is not a valid source');
+      Stream = ErrorStream;
+    }
   }
 
   return new Stream(this);

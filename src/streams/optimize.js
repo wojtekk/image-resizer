@@ -26,20 +26,19 @@ module.exports = function () {
 
     if (env.IMAGE_PROGRESSIVE) {
       r.progressive();
-      r.optimiseScans();
     }
 
-    r.quality(image.modifiers.quality);
-
-    r.overshootDeringing();
-    r.trellisQuantisation();
-    r.compressionLevel(9);
-
-    if (!image.format) {
-      image.format = 'png';
+    // set the output quality
+    if (image.modifiers.quality < 100) {
+      r.quality(image.modifiers.quality);
     }
-    r.toFormat(image.format);
 
+    // if a specific output format is specified, set it
+    if (image.outputFormat) {
+      r.toFormat(image.outputFormat);
+    }
+
+    // write out the optimised image to buffer and pass it on
     r.toBuffer( function (err, buffer) {
       if (err) {
         image.log.error('optimize error', err);

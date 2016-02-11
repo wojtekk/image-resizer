@@ -42,6 +42,8 @@ module.exports = function () {
     };
 
     var r = sharp(image.contents);
+    // attempts to enable the use of SIMD
+    r.simd(true);
 
     // never enlarge an image beyond its original size, unless we're padding
     // the image, as even though this can count as an "enlargement" the padded
